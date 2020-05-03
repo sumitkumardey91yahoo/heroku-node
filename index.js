@@ -3,6 +3,7 @@ const path = require('path')
 const app = express();
 const db = require('./firebaseInit')
 var bodyParser = require('body-parser')
+const amqp = require('amqplib/callback_api');
 console.log(process.argv[2])
 
 const PORT = process.env.PORT || 5000
@@ -26,41 +27,64 @@ app.use(function (req, res, next) {
   // Pass to next layer of middleware
   next();
 });
- 
+
 app.get('/emp', function (req, res) {
+    let cityRef = db.collection('sumit').doc('emp');
+    let getDoc = cityRef.get()
+    .then(doc => {
+    if (!doc.exists) {
+      console.log('No such document!');
+    } else {
+      console.log('Document data:', doc.data());
+        res.status(200).send(doc.data())
+    }
+  })
+  .catch(err => {
+    console.log('Error getting document', err);
+  });
 
-    db.collection('employees').orderBy('dept').get().then((querySnapshot) => {
-        let employees = [];
-        querySnapshot.forEach((doc) => {
-          // console.log(doc.data())
-          // const data = {
-          //   'id': doc.id,
-          //   'employee_id': doc.data().employee_id,
-          //   'name': doc.data().name,
-          //   'dept': doc.data().dept,
-          //   'position': doc.data().position,
-          //   'city': doc.data().city
-          // }
-          employees.push(doc.data())
-        })
-
-        res.send(employees)
-      })
-  
 })
 
 app.post('/emp', function (req, res) {
-  console.log("123")
-  res.statusCode(200)
-  res.send("data", req.body)
+  let data = req.body;
+  console.log(req.body)
+  let setDoc = db.collection('sumit').doc('emp').set(data);
+   res.status(200).send("done")
 });
 
 
 app.get('/sumit', (req, res) => {
-  
     res.send({
         "name": "sumit"
     })
   })
-  
+
+app.post('/sender', (req, res) => {
+
+  amqp.connect('amqp://cjjkeuhk:tCA_9BW8iIEguaBuJ-JYY047i8kmIVkE@jellyfish.rmq.cloudamqp.com/cjjkeuhk', (connError, connection) => {
+      if (connError) {
+          throw connError;
+      }
+      // Step 2: Create Channel
+      connection.createChannel((channelError, channel) => {
+          if (channelError) {
+              throw channelError;
+          }
+          // Step 3: Assert Queue
+          const QUEUE = 'sumit'
+          channel.assertQueue(QUEUE);
+          // Step 4: Send message to queue
+         // channel.sendToQueue(QUEUE, Buffer.from('1 sumit done'));
+
+          channel.sendToQueue(QUEUE, Buffer.from(JSON.stringify(req.body)));
+
+          let setDoc = db.collection('sumit').doc('emp').set(req.body);
+           res.status(200).send("done")
+
+          console.log(`Message send ${QUEUE}`);
+      })
+  })
+
+})
+
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))

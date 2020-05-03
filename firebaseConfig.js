@@ -1,10 +1,9 @@
-module.exports = { 
-  apiKey: "AIzaSyBtVXJ0hkljDTWd1G-OcuMYjjM4_cV5-80",
-  authDomain: "vuejsmob.firebaseapp.com",
-  databaseURL: "https://vuejsmob.firebaseio.com",
-  projectId: "vuejsmob",
-  storageBucket: "vuejsmob.appspot.com",
-  messagingSenderId: "885866208440",
-  appId: "1:885866208440:web:fd8c74eb50cc19d67ee84d",
-  measurementId: "G-TDR30JWJXH"
+module.exports = {
+  apiKey: "AIzaSyBU5z4stnibUrXxX4rZSu0SLlHkFqxzV_4",
+  authDomain: "sumit-kumar-dey.firebaseapp.com",
+  databaseURL: "https://sumit-kumar-dey.firebaseio.com",
+  projectId: "sumit-kumar-dey",
+  storageBucket: "sumit-kumar-dey.appspot.com",
+  messagingSenderId: "23286178317",
+  appId: "1:23286178317:web:3a74956ff5fdaf784fab44"
 }
